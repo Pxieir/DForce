@@ -1,0 +1,336 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:视图模型="clr-namespace:AvaloniaApp八宝粥.视图模型"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
+        x:Class="AvaloniaApp八宝粥.视图.主窗口"
+        x:DataType="视图模型:主窗口视图模型"
+        Title="快捷应用"
+        Width="910" Height="803"
+        WindowStartupLocation="CenterScreen"
+        Background="#FAFAFA"
+        FontFamily="Segoe UI, Microsoft YaHei">
+
+    <Design.DataContext>
+        <视图模型:主窗口视图模型 />
+    </Design.DataContext>
+
+    <!-- 样式定义区 -->
+    <Window.Styles>
+        <!-- 1. 通用卡片样式 -->
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BoxShadow" Value="0 2 10 0 #15000000" />
+            <Setter Property="Padding" Value="20" />
+        </Style>
+
+        <!-- 2. 标题文字样式 -->
+        <Style Selector="TextBlock.SectionHeader">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#333333" />
+            <Setter Property="Margin" Value="0,0,0,15" />
+        </Style>
+
+        <!-- 3. 参数标签样式 -->
+        <Style Selector="TextBlock.ParamLabel">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="#666666" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- 4. 预设按钮样式 -->
+        <Style Selector="Button.Preset">
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="15,6" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.Preset:pointerover">
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+
+        <!-- 5. 核心控制按钮样式 -->
+        <Style Selector="Button.MainControl">
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- 按钮逻辑：停止中 -->
+        <Style Selector="Button.MainControl[Tag=False]">
+            <Setter Property="Background" Value="#2E7D32" />
+            <Setter Property="Content" Value="▶ 启动压枪" />
+        </Style>
+        <Style Selector="Button.MainControl[Tag=False]:pointerover">
+            <Setter Property="Background" Value="#388E3C" />
+        </Style>
+
+        <!-- 按钮逻辑：运行中 -->
+        <Style Selector="Button.MainControl[Tag=True]">
+            <Setter Property="Background" Value="#C62828" />
+            <Setter Property="Content" Value="⏹ 停止运行" />
+        </Style>
+        <Style Selector="Button.MainControl[Tag=True]:pointerover">
+            <Setter Property="Background" Value="#D32F2F" />
+        </Style>
+
+        <!-- 6. 状态标签样式 -->
+        <Style Selector="TextBlock.StatusText[Tag=False]">
+            <Setter Property="Text" Value="已停止" />
+            <Setter Property="Foreground" Value="Gray" />
+        </Style>
+        <Style Selector="TextBlock.StatusText[Tag=True]">
+            <Setter Property="Text" Value="运行中" />
+            <Setter Property="Foreground" Value="Green" />
+        </Style>
+
+        <!-- 状态背景 -->
+        <Style Selector="Border.StatusBadge[Tag=False]">
+            <Setter Property="Background" Value="#EEEEEE" />
+        </Style>
+        <Style Selector="Border.StatusBadge[Tag=True]">
+            <Setter Property="Background" Value="#E8F5E9" />
+        </Style>
+
+        <!-- 7. 状态圆点颜色逻辑 -->
+        <Style Selector="Border.StatusBadge[Tag=True] Ellipse">
+            <Setter Property="Fill" Value="#4CAF50" />
+        </Style>
+        <Style Selector="Border.StatusBadge[Tag=False] Ellipse">
+            <Setter Property="Fill" Value="#BDBDBD" />
+        </Style>
+
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto, *, Auto" Margin="25">
+
+        <!-- 顶部栏 -->
+        <!--<Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,25">
+            
+            <StackPanel Orientation="Horizontal" Spacing="15" VerticalAlignment="Center">
+                <PathIcon
+                    Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"
+                    Foreground="#333" Width="24" Height="24" />
+                <TextBlock Text="快捷方式 Pro" FontSize="22" FontWeight="Bold" Foreground="#222" />
+            </StackPanel>
+            
+
+            ~1~ 状态指示器 @1@
+            <Border Grid.Column="1" Classes="StatusBadge" Tag="{Binding 正在运行}" CornerRadius="15" Padding="15,5"
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Ellipse Width="8" Height="8" />
+                    <TextBlock Classes="StatusText" Tag="{Binding 正在运行}" FontWeight="SemiBold" FontSize="14" />
+                </StackPanel>
+            </Border>
+        </Grid>
+        -->
+
+
+        <!-- 中间内容区 -->
+        <Grid Grid.Row="1" ColumnDefinitions="1.6*, 1*">
+
+            <!-- 左侧：配置面板 -->
+            <Border Grid.Column="0" Classes="Card" Margin="0,0,15,0">
+                <ScrollViewer Padding="0,0,10,0">
+                    <StackPanel Spacing="20">
+
+                        <!-- 快速预设 -->
+                        <StackPanel>
+                            <TextBlock Text="快速模式" Classes="SectionHeader" />
+                            <Grid ColumnDefinitions="*,*,*">
+                                <Button Grid.Column="0" Classes="Preset" Background="#42A5F5" Content="轻度压枪"
+                                        Command="{Binding 加载示例配置Command}" CommandParameter="轻" Margin="0,0,5,0" />
+                                <Button Grid.Column="1" Classes="Preset" Background="#FFA726" Content="中度压枪"
+                                        Command="{Binding 加载示例配置Command}" CommandParameter="中" Margin="5,0,5,0" />
+                                <Button Grid.Column="2" Classes="Preset" Background="#EF5350" Content="重度压枪"
+                                        Command="{Binding 加载示例配置Command}" CommandParameter="重" Margin="5,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+
+                        <Separator Background="#EEE" Height="1" />
+
+                        <!-- 核心参数 -->
+                        <StackPanel Spacing="15">
+                            <TextBlock Text="核心参数" Classes="SectionHeader" />
+
+                            <!-- 1. 基础力度 -->
+                            <Grid RowDefinitions="Auto, Auto">
+                                <DockPanel LastChildFill="False" Margin="0,0,0,5">
+                                    <!-- 将名称和数值放在一起 -->
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <TextBlock Text="基础力度 (下压像素)" Classes="ParamLabel" />
+                                        <!-- 这里显示具体数字，加粗并变色以突出显示 -->
+                                        <TextBlock Text="{Binding 当前配置.基础力度}"
+                                                   Classes="ParamLabel"
+                                                   FontWeight="Bold"
+                                                   Foreground="#1976D2" />
+                                    </StackPanel>
+
+                                    <!-- 上下调节按钮的参数范围 -->
+                                    <NumericUpDown DockPanel.Dock="Right" Value="{Binding 当前配置.基础力度}" Minimum="1"
+                                                   Maximum="30" Width="80" />
+                                </DockPanel>
+
+                                <!-- 滑块参数的调整范围 -->
+                                <Slider Grid.Row="1" Value="{Binding 当前配置.基础力度}" Minimum="1" Maximum="30"
+                                        TickFrequency="1" IsSnapToTickEnabled="True" />
+                            </Grid>
+
+                            <!-- 2. 脱敏度 -->
+                            <Grid RowDefinitions="Auto, Auto">
+                                <DockPanel LastChildFill="False" Margin="0,0,0,5">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <TextBlock Text="脱敏度 (平滑修正)" Classes="ParamLabel" />
+                                        <TextBlock Text="{Binding 当前配置.脱敏度}"
+                                                   Classes="ParamLabel"
+                                                   FontWeight="Bold"
+                                                   Foreground="#1976D2" />
+                                    </StackPanel>
+
+                                    <!-- 上下调节按钮的参数范围 -->
+                                    <NumericUpDown DockPanel.Dock="Right" Value="{Binding 当前配置.脱敏度}" Minimum="1"
+                                                   Maximum="100" Width="80" />
+                                </DockPanel>
+
+                                <!-- 滑块参数的调整范围 -->
+                                <Slider Grid.Row="1" Value="{Binding 当前配置.脱敏度}" Minimum="1" Maximum="100" />
+                            </Grid>
+
+                            <!-- 3. 随机偏差 -->
+                            <Grid RowDefinitions="Auto, Auto">
+                                <DockPanel LastChildFill="False" Margin="0,0,0,5">
+                                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                        <TextBlock Text="随机偏差 (模拟手抖)" Classes="ParamLabel" />
+                                        <TextBlock Text="{Binding 当前配置.随机偏差范围}"
+                                                   Classes="ParamLabel"
+                                                   FontWeight="Bold"
+                                                   Foreground="#1976D2" />
+                                    </StackPanel>
+
+                                    <!-- 上下调节按钮的参数范围 -->
+                                    <NumericUpDown DockPanel.Dock="Right" Value="{Binding 当前配置.随机偏差范围}" Minimum="0"
+                                                   Maximum="10" Width="80" />
+                                </DockPanel>
+
+                                <!-- 滑块参数的调整范围 -->
+                                <Slider Grid.Row="1" Value="{Binding 当前配置.随机偏差范围}" Minimum="0" Maximum="10" />
+                            </Grid>
+                        </StackPanel>
+
+                        <Separator Background="#EEE" Height="1" />
+
+                        <!-- 高级设置 -->
+                        <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" Margin="0,5">
+                            <!-- 屏幕高度：去掉上下调节按钮，显示整数 -->
+                            <StackPanel Grid.Column="0" Spacing="5" Margin="0,0,10,0">
+                                <TextBlock Text="屏幕高度" Classes="ParamLabel" />
+                                <!-- 使用 TextBox + IntegerOnly 输入限制 -->
+                                <TextBox Text="{Binding 当前配置.屏幕高度, Mode=TwoWay}"
+                                         Watermark="请输入整数" />
+                            </StackPanel>
+
+                            <!-- 启动热键：下拉选择 -->
+                            <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5" Margin="10,0,0,0">
+                                <TextBlock Text="启动热键" Classes="ParamLabel" />
+                                <ComboBox SelectedValue="{Binding 当前配置.启动控制键, Mode=TwoWay}"
+                                          SelectedValueBinding="{Binding Content}"
+                                          HorizontalAlignment="Stretch">
+                                    <ComboBoxItem Content="CapsLock" />
+                                    <ComboBoxItem Content="NumLock" />
+                                </ComboBox>
+                            </StackPanel>
+
+                        </Grid>
+
+                        <!-- 底部按钮组 -->
+                        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,10,0,0">
+                            <Button Content="📂 加载配置" Command="{Binding 加载配置Command}" />
+                            <Button Content="💾 保存配置" Command="{Binding 保存配置Command}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- 右侧：功能与日志 -->
+            <Grid Grid.Column="1" RowDefinitions="Auto, *">
+
+                <!-- 快捷功能卡片 -->
+                <Border Grid.Row="0" Classes="Card" Padding="10" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="快捷功能" Classes="SectionHeader" Margin="0,0,0,5" />
+                        <Grid ColumnDefinitions="*,*,*">
+                            <Button Grid.Column="0" Classes="Preset" Background="#42A5F5" Content="启动程序"
+                                    Command="{Binding 执行快捷功能Command}" CommandParameter="启动程序" Margin="0,0,5,0" />
+                            <Button Grid.Column="1" Classes="Preset" Background="#FFA726" Content="退出程序"
+                                    Command="{Binding 加载示例配置Command}" CommandParameter="中" Margin="5,0,5,0" />
+                            <Button Grid.Column="2" Classes="Preset" Background="#EF5350" Content="卸载程序"
+                                    Command="{Binding 加载示例配置Command}" CommandParameter="重" Margin="5,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 日志卡片 -->
+                <Border Grid.Row="1" Classes="Card" Padding="10">
+                    <Grid RowDefinitions="Auto, *">
+                        <DockPanel Grid.Row="0" Margin="0,0,0,10" LastChildFill="False">
+                            <TextBlock Text="运行日志" Classes="SectionHeader" Margin="0" VerticalAlignment="Center" />
+                            <Button DockPanel.Dock="Right" Content="导出" Command="{Binding 导出日志Command}" FontSize="11"
+                                    Padding="8,4" CornerRadius="4" />
+                        </DockPanel>
+
+                        <ListBox Grid.Row="1" ItemsSource="{Binding 日志列表}" Background="Transparent" BorderThickness="0">
+                            <ListBox.Styles>
+                                <Style Selector="ListBoxItem">
+                                    <Setter Property="Padding" Value="5,2" />
+                                    <Setter Property="FontSize" Value="12" />
+                                </Style>
+                            </ListBox.Styles>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontFamily="Microsoft YaHei" TextWrapping="Wrap"
+                                               Foreground="#555" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- 底部控制栏 -->
+        <Grid Grid.Row="2" Margin="0,20,0,0" ColumnDefinitions="*,Auto,*">
+
+            <!-- 提示信息 -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="5" Opacity="0.7">
+                <PathIcon
+                    Data="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    Width="16" Height="16" Foreground="#555" />
+                <TextBlock Text="请以管理员身份运行以确保游戏内生效" FontSize="12" Foreground="#555" />
+            </StackPanel>
+
+            <!-- 核心控制按钮 -->
+            <Button Grid.Column="1"
+                    Classes="MainControl"
+                    Command="{Binding 切换运行状态Command}"
+                    Tag="{Binding 正在运行}"
+                    Width="200" Height="50" />
+
+            <!-- 右下角版本号 -->
+            <TextBlock Grid.Column="2" Text="v1.0.0" HorizontalAlignment="Right" VerticalAlignment="Center"
+                       Foreground="#CCC" FontSize="11" />
+        </Grid>
+    </Grid>
+</Window>
