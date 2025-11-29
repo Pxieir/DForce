@@ -11,6 +11,7 @@ public static class 快捷功能
     {
         var Obs进程名 = "obs64";
         var Obs程序路径 = @"D:\\Rice\\Downloads\\OBS\\obs-studio\\bin\\64bit\\obs64.exe";
+        var Obs是否运行中 = false; // 记录本次是否启动了 OBS
 
         // 判断进程是否运行
         if (进程是否运行(Obs进程名))
@@ -24,21 +25,41 @@ public static class 快捷功能
             更改分辨率(1920, 1080);
             Thread.Sleep(1000); // 等1秒
             启动指定程序(Obs程序路径);
+            Obs是否运行中 = true;
 
             主窗口视图模型.添加日志("第一阶段已完成");
         }
 
-        更改分辨率(2560, 1600);
-        Thread.Sleep(2000); // 等2秒
+        // 如果是本次启动的 OBS，则等待“OBS Studio”弹窗出现并消失
+        if (Obs是否运行中)
+        {
+            const string 弹窗标题 = "OBS Studio"; // 大小写敏感
+            主窗口视图模型.添加日志($"等待弹窗 “{弹窗标题}” 出现");
 
-        // Steam
-        检测并启动("steam", @"E:\\Program Files (x86)\\Steam\\steam.exe");
-        // 微星小飞机
-        检测并启动("MSIAfterburner", @"D:\\Program Files (x86)\\MSI Afterburner\\MSIAfterburner.exe");
+            if (等待窗口出现(弹窗标题, TimeSpan.FromSeconds(60)))
+            {
+                主窗口视图模型.添加日志($"已检测到 “{弹窗标题}” ，继续等待其关闭");
+                等待窗口消失(弹窗标题, TimeSpan.FromMinutes(2));
+                主窗口视图模型.添加日志($" “{弹窗标题}” 已关闭");
+            }
+            else
+            {
+                主窗口视图模型.添加日志($"未在超时内检测到 “{弹窗标题}” ，继续后续流程");
+            }
 
-        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb0.bin", true);
-        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb1.bin", true);
-        主窗口视图模型.添加日志("已设置 NVIDIA DRS 文件只读");
+            // 更改分辨率(2560, 1600);
+            更改分辨率(2560, 1600);
+            Thread.Sleep(2000);
+
+            // Steam
+            检测并启动("steam", @"E:\\Program Files (x86)\\Steam\\steam.exe");
+            // 微星小飞机
+            检测并启动("MSIAfterburner", @"D:\\Program Files (x86)\\MSI Afterburner\\MSIAfterburner.exe");
+
+            设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb0.bin", true);
+            设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb1.bin", true);
+            主窗口视图模型.添加日志("已设置 NVIDIA DRS 文件只读");
+        }
     }
 
     public static void 执行退出游戏指令()

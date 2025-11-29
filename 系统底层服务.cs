@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Text;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using AvaloniaApp八宝粥.视图模型;
 
 namespace AvaloniaApp八宝粥;
@@ -173,6 +175,98 @@ public static class 系统底层服务
                 break;
         }
     }
+
+    #endregion
+
+
+    #region 等待“OBS Studio”弹窗出现/消失
+
+    // 等待窗口标题为 指定标题 的顶层窗口“出现”，在 超时时间 内轮询
+    public static bool 等待窗口出现(string 指定标题, TimeSpan 超时时间)
+    {
+        var 计时器 = Stopwatch.StartNew();
+        while (计时器.Elapsed < 超时时间)
+        {
+            if (存在指定标题窗口(指定标题)) return true;
+            Thread.Sleep(200);
+        }
+
+        return false;
+    }
+
+    // 等待窗口标题为 指定标题 的顶层窗口“消失”，在 超时时间 内轮询
+    public static bool 等待窗口消失(string 指定标题, TimeSpan 超时时间)
+    {
+        var 计时器 = Stopwatch.StartNew();
+        while (计时器.Elapsed < 超时时间)
+        {
+            if (!存在指定标题窗口(指定标题)) return true;
+            Thread.Sleep(200);
+        }
+
+        return false;
+    }
+
+    // 检测是否存在顶层可见窗口，其标题严格等于 指定标题（大小写敏感）
+    private static bool 存在指定标题窗口(string 指定标题)
+    {
+        bool 已找到 = false;
+
+        枚举所有窗口((窗口句柄, 附加参数) =>
+        {
+            if (!窗口是否可见(窗口句柄)) return true;
+
+            var 标题缓冲 = new StringBuilder(512);
+            获取窗口标题(窗口句柄, 标题缓冲, 标题缓冲.Capacity);
+            var 当前标题 = 标题缓冲.ToString();
+
+            // 大小写敏感比较（严格相等）
+            if (当前标题 == 指定标题)
+            {
+                已找到 = true;
+                return false; // 停止枚举
+            }
+
+            return true; // 继续枚举
+        }, IntPtr.Zero);
+
+        return 已找到;
+    }
+
+
+    // 与 EnumWindows 的回调签名一致
+    private delegate bool 枚举窗口回调(IntPtr 窗口句柄, IntPtr 附加参数);
+
+    // 枚举顶层窗口
+    [DllImport("user32.dll", EntryPoint = "EnumWindows")]
+    private static extern bool 枚举所有窗口(枚举窗口回调 回调函数, IntPtr 附加参数);
+
+    // 获取窗口标题（使用 W 版本以保证 Unicode）
+    [DllImport("user32.dll", EntryPoint = "GetWindowTextW", CharSet = CharSet.Unicode)]
+    private static extern int 获取窗口标题(IntPtr 窗口句柄, StringBuilder 标题缓冲, int 最大长度);
+
+    // 判断窗口是否可见
+    [DllImport("user32.dll", EntryPoint = "IsWindowVisible")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool 窗口是否可见(IntPtr 窗口句柄);
+
+    // 获取窗口所归属的进程 ID（如需按进程进一步筛选，可使用）
+    [DllImport("user32.dll", EntryPoint = "GetWindowThreadProcessId")]
+    private static extern uint 获取窗口线程及进程Id(IntPtr 窗口句柄, out uint 进程Id);
+
+/* 如需只匹配 OBS 进程的窗口标题，可这样用（示意）：
+    var 进程集合 = Process.GetProcessesByName("obs64").Select(p => p.Id).ToHashSet();
+    枚举所有窗口((窗口句柄, _) => {
+        if (!窗口是否可见(窗口句柄)) return true;
+        获取窗口线程及进程Id(窗口句柄, out var pid);
+        if (!进程集合.Contains((int)pid)) return true;
+
+        var 标题 = new StringBuilder(512);
+        获取窗口标题(窗口句柄, 标题, 标题.Capacity);
+        if (标题.ToString() == 指定标题) { 已找到 = true; return false; }
+        return true;
+    }, IntPtr.Zero);
+*/
 
     #endregion
 }
