@@ -272,8 +272,8 @@
                     <StackPanel>
                         <TextBlock Text="快捷功能" Classes="SectionHeader" Margin="0,0,0,5" />
                         <Grid ColumnDefinitions="*,*,*">
-                            <Button Grid.Column="0" Classes="Preset" Background="#42A5F5" Content="启动程序"
-                                    Command="{Binding 执行快捷功能Command}" CommandParameter="启动程序" Margin="0,0,5,0" />
+                            <Button Grid.Column="0" Classes="Preset" Background="#42A5F5" Content="{Binding 快捷按钮文本}"
+                                    Command="{Binding 切换快捷功能按钮Command}" Margin="0,0,5,0" />
                             <Button Grid.Column="1" Classes="Preset" Background="#FFA726" Content="退出程序"
                                     Command="{Binding 加载示例配置Command}" CommandParameter="中" Margin="5,0,5,0" />
                             <Button Grid.Column="2" Classes="Preset" Background="#EF5350" Content="卸载程序"

@@ -17,6 +17,8 @@ public partial class 主窗口视图模型 : ObservableObject
     private CancellationTokenSource? _取消令牌源;
     [ObservableProperty] private string _运行状态文本 = "已停止";
     [ObservableProperty] private bool _正在运行;
+    [ObservableProperty] private bool _正在等待恢复;
+    [ObservableProperty] private string _快捷按钮文本 = "启动程序";
 
     // 构造函数
     public 主窗口视图模型()
@@ -145,16 +147,22 @@ public partial class 主窗口视图模型 : ObservableObject
 
 
     [RelayCommand]
-    private static void 执行快捷功能(string 快捷功能类型)
+    private void 切换快捷功能按钮()
     {
-        switch (快捷功能类型)
+        if (!正在等待恢复)
         {
-            case "启动程序":
-                快捷功能.执行启动程序指令();
-                break;
+            快捷功能.执行启动程序指令();
+            快捷按钮文本 = "恢复分辨率";
+            正在等待恢复 = true;
+            添加日志("启动程序1执行完毕，等待恢复分辨率");
         }
-
-        添加日志("启动程序成功");
+        else
+        {
+            快捷功能.执行恢复分辨率指令();
+            快捷按钮文本 = "启动程序";
+            正在等待恢复 = false;
+            添加日志("启动程序2执行完毕，已恢复分辨率");
+        }
     }
 
     // 内部逻辑

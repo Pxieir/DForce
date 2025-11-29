@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using AvaloniaApp八宝粥.视图模型;
 
@@ -10,13 +10,13 @@ public static class 快捷功能
     public static void 执行启动程序指令()
     {
         var Obs进程名 = "obs64";
-        var Obs程序路径 = @"D:\Rice\Downloads\OBS\obs-studio\bin\64bit\obs64.exe";
+        var Obs程序路径 = @"D:\\Rice\\Downloads\\OBS\\obs-studio\\bin\\64bit\\obs64.exe";
 
         // 判断进程是否运行
         if (进程是否运行(Obs进程名))
         {
-            // 如果 OBS 正在运行，则直接跳到脚本执行部分
-            主窗口视图模型.添加日志($"检测到 {Obs进程名} 已在运行，跳过分辨率更改并直接执行脚本");
+            主窗口视图模型.添加日志($"检测到 {Obs进程名} 已在运行，跳过分辨率更改");
+            主窗口视图模型.添加日志("\n第一阶段已完成，请点击\"恢复分辨率\"继续执行后续步骤");
         }
         else
         {
@@ -26,26 +26,29 @@ public static class 快捷功能
             Thread.Sleep(1000); // 等1秒
             启动指定程序(Obs程序路径);
 
-            主窗口视图模型.添加日志("\n按任意键继续执行后续步骤");
-
-            主窗口视图模型.添加日志("\n--- 恢复 2.5K 分辨率 ---");
-            更改分辨率(2560, 1600);
-            Thread.Sleep(2000); // 等2秒
+            主窗口视图模型.添加日志("\n第一阶段已完成，请点击\"恢复分辨率\"继续执行后续步骤");
         }
+    }
+
+    public static void 执行恢复分辨率指令()
+    {
+        主窗口视图模型.添加日志("\n--- 恢复 2.5K 分辨率 ---");
+        更改分辨率(2560, 1600);
+        Thread.Sleep(2000); // 等2秒
 
         主窗口视图模型.添加日志("\n正在启动程序");
 
         // Steam
-        检测并启动("steam", @"E:\Program Files (x86)\Steam\steam.exe");
+        检测并启动("steam", @"E:\\Program Files (x86)\\Steam\\steam.exe");
         // 微星小飞机
-        检测并启动("MSIAfterburner", @"D:\Program Files (x86)\MSI Afterburner\MSIAfterburner.exe");
+        检测并启动("MSIAfterburner", @"D:\\Program Files (x86)\\MSI Afterburner\\MSIAfterburner.exe");
 
         主窗口视图模型.添加日志("\n初始软件就绪，脚本已暂停");
         // Console.ReadLine();
 
         主窗口视图模型.添加日志("\n正在设置 NVIDIA DRS 文件为只读");
-        设置文件只读(@"C:\ProgramData\NVIDIA Corporation\Drs\nvdrsdb0.bin", true);
-        设置文件只读(@"C:\ProgramData\NVIDIA Corporation\Drs\nvdrsdb1.bin", true);
+        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb0.bin", true);
+        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb1.bin", true);
 
         主窗口视图模型.添加日志("\n初始软件就绪，脚本已暂停");
         主窗口视图模型.添加日志("按任意键继续执行后续的清理和卸载步骤");
@@ -60,11 +63,11 @@ public static class 快捷功能
         Thread.Sleep(3000); // 等待3秒
 
         主窗口视图模型.添加日志("\n正在启动卸载程序");
-        检测并启动("HiBitUninstaller", @"D:\Program Files (x86)\HiBit Uninstaller\HiBitUninstaller.exe");
+        检测并启动("HiBitUninstaller", @"D:\\Program Files (x86)\\HiBit Uninstaller\\HiBitUninstaller.exe");
 
         主窗口视图模型.添加日志("\n正在取消 NVIDIA DRS 文件的只读状态");
-        设置文件只读(@"C:\ProgramData\NVIDIA Corporation\Drs\nvdrsdb0.bin", false);
-        设置文件只读(@"C:\ProgramData\NVIDIA Corporation\Drs\nvdrsdb1.bin", false);
+        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb0.bin", false);
+        设置文件只读(@"C:\\ProgramData\\NVIDIA Corporation\\Drs\\nvdrsdb1.bin", false);
 
         主窗口视图模型.添加日志("\n--- 所有操作已执行完毕 ---");
     }
@@ -92,7 +95,7 @@ public static class 快捷功能
             ProcessStartInfo 启动信息 = new()
             {
                 FileName = 程序文件路径,
-                // 设置工作目录为程序文件所在的目录，确保程序能找到其相对路径下的资源文件
+                // 设置工作目录为程序文件所在的目录，确保程能找到其相对路径下的资源文件
                 WorkingDirectory = Path.GetDirectoryName(程序文件路径),
                 UseShellExecute = true
             };
