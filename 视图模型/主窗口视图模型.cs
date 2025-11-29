@@ -14,8 +14,10 @@ public partial class 主窗口视图模型 : ObservableObject
 
     // 属性绑定
     [ObservableProperty] private 用户配置模型 _当前配置;
+    [ObservableProperty] private string _快捷按钮文本 = "启动程序";
     private CancellationTokenSource? _取消令牌源;
     [ObservableProperty] private string _运行状态文本 = "已停止";
+    [ObservableProperty] private bool _正在等待恢复;
     [ObservableProperty] private bool _正在运行;
 
     // 构造函数
@@ -145,16 +147,20 @@ public partial class 主窗口视图模型 : ObservableObject
 
 
     [RelayCommand]
-    private static void 执行快捷功能(string 快捷功能类型)
+    private void 切换快捷功能按钮()
     {
-        switch (快捷功能类型)
+        if (!正在等待恢复)
         {
-            case "启动程序":
-                快捷功能.执行启动程序指令();
-                break;
+            快捷功能.执行启动程序指令();
+            快捷按钮文本 = "退出游戏";
+            正在等待恢复 = true;
         }
-
-        添加日志("启动程序成功");
+        else
+        {
+            快捷功能.执行退出游戏指令();
+            快捷按钮文本 = "启动程序";
+            正在等待恢复 = false;
+        }
     }
 
     // 内部逻辑
