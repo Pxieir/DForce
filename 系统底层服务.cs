@@ -250,23 +250,6 @@ public static class 系统底层服务
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool 窗口是否可见(IntPtr 窗口句柄);
 
-    // 获取窗口所归属的进程 ID（如需按进程进一步筛选，可使用）
-    [DllImport("user32.dll", EntryPoint = "GetWindowThreadProcessId")]
-    private static extern uint 获取窗口线程及进程Id(IntPtr 窗口句柄, out uint 进程Id);
-
-/* 如需只匹配 OBS 进程的窗口标题，可这样用（示意）：
-    var 进程集合 = Process.GetProcessesByName("obs64").Select(p => p.Id).ToHashSet();
-    枚举所有窗口((窗口句柄, _) => {
-        if (!窗口是否可见(窗口句柄)) return true;
-        获取窗口线程及进程Id(窗口句柄, out var pid);
-        if (!进程集合.Contains((int)pid)) return true;
-
-        var 标题 = new StringBuilder(512);
-        获取窗口标题(窗口句柄, 标题, 标题.Capacity);
-        if (标题.ToString() == 指定标题) { 已找到 = true; return false; }
-        return true;
-    }, IntPtr.Zero);
-*/
-
     #endregion
+
 }
