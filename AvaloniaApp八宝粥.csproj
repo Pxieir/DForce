@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>AvaloniaApp八宝粥</RootNamespace>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <!--.exe程序的图标-->
+        <ApplicationIcon>资源\avalonia-logo.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Avalonia 基础包 -->
+        <PackageReference Include="Avalonia" Version="11.0.6"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.6"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.6"/>
+        <!-- MVVM 工具包，简化属性通知 -->
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+        <!--运行时窗口的图标-->
+        <AvaloniaResource Include="资源\avalonia-logo.ico"/>
+    </ItemGroup>
+
+    <!-- 指定环境,避免创建多余的其他系统环境 -->
+    <PropertyGroup>
+        <!-- 只针对 Windows x64 发布 -->
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <!-- 或者多平台时用 RuntimeIdentifiers，但你现在不需要 -->
+        <!-- <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers> -->
+    </PropertyGroup>
+
+</Project>

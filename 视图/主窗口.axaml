@@ -1,0 +1,233 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:视图模型="clr-namespace:AvaloniaApp八宝粥.视图模型"
+        mc:Ignorable="d"
+        x:Class="AvaloniaApp八宝粥.视图.主窗口"
+        Width="900"
+        Height="560"
+        MinWidth="800"
+        MinHeight="500"
+        Background="#FFFFFF"
+        FontFamily="Segoe UI, Microsoft YaHei UI, Arial"
+        FontSize="14"
+        Title="实用工具">
+
+    <!-- 扁平化按钮/卡片样式，统一配色：主色 #2563EB，辅色 #F3F4F6 -->
+    <Window.Styles>
+
+        <!-- 主操作按钮：开始/停止压枪 -->
+        <Style Selector="Button.主操作按钮">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#2563EB" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- 次级按钮：一键启动 / 一键退出 -->
+        <Style Selector="Button.次要按钮">
+            <Setter Property="Background" Value="#F3F4F6" />
+            <Setter Property="Foreground" Value="#111827" />
+            <Setter Property="BorderBrush" Value="#E5E7EB" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <!-- 卡片容器：统一扁平浅灰背景 -->
+        <Style Selector="Border.卡片">
+            <Setter Property="Background" Value="#F3F4F6" />
+            <Setter Property="BorderBrush" Value="#E5E7EB" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+
+        <!-- 标题文本（18px） -->
+        <Style Selector="TextBlock.主标题">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#111827" />
+        </Style>
+
+        <!-- 小号辅助文本（12px） -->
+        <Style Selector="TextBlock.辅助文本">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#6B7280" />
+        </Style>
+
+    </Window.Styles>
+
+    <!-- 顶层两行：标题 + 内容 -->
+    <Grid RowDefinitions="Auto,*"
+          Margin="16">
+        <Design.DataContext>
+            <视图模型:主窗口视图模型 />
+        </Design.DataContext>
+
+        <!-- 主体内容：上方为核心操作+参数，下方为日志 -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+
+            <!-- 上半部分：左侧“核心操作”，右侧“参数设置” -->
+            <!-- 用三列，中间 12px 空列模拟 ColumnSpacing -->
+            <Grid Grid.Row="0" ColumnDefinitions="2*,12,3*">
+
+                <!-- 核心操作卡片 -->
+                <Border Grid.Column="0"
+                        Classes="卡片">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="核心操作"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#111827" />
+
+                        <!-- 开始/停止压枪主按钮 -->
+                        <Button Classes="主操作按钮"
+                                Content="{Binding 压枪按钮文本}"
+                                Command="{Binding 切换压枪Command}"
+                                AutomationProperties.Name="开始或停止压枪" />
+
+                        <!-- 关键快捷操作：一键启动游戏环境 & 一键退出 -->
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="8">
+                            <Button Classes="次要按钮"
+                                    Content="一键启动"
+                                    Command="{Binding 执行一键启动Command}"
+                                    AutomationProperties.Name="一键启动游戏环境"
+                                    ToolTip.Tip="启动 OBS / 调整分辨率等必要程序与设置" />
+                            <Button Classes="次要按钮"
+                                    Content="一键退出"
+                                    Command="{Binding 执行一键退出Command}"
+                                    AutomationProperties.Name="一键退出游戏并清理环境"
+                                    ToolTip.Tip="结束八宝粥进程并恢复系统设置" />
+                        </StackPanel>
+
+                        <!-- 状态文本：小号辅助信息 -->
+                        <TextBlock Text="{Binding 状态文本}"
+                                   Classes="辅助文本"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 参数设置卡片 -->
+                <Border Grid.Column="2"
+                        Classes="卡片">
+                    <StackPanel Spacing="10">
+
+                        <TextBlock Text="参数设置"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#111827" />
+
+                        <!-- 基础力度 -->
+                        <Grid ColumnDefinitions="Auto,*">
+                            <TextBlock Text="基础力度"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1"
+                                        Spacing="4"
+                                        Margin="8,0,0,0">
+                                <Slider Minimum="1"
+                                        Maximum="20"
+                                        Value="{Binding 配置.基础力度}"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        AutomationProperties.Name="基础力度"
+                                        ToolTip.Tip="控制每次压枪的基础像素位移"
+                                        Height="20" />
+                                <TextBlock Text="{Binding 配置.基础力度}"
+                                           Classes="辅助文本" />
+                            </StackPanel>
+                        </Grid>
+
+
+                        <!-- 脱敏度 -->
+                        <Grid ColumnDefinitions="Auto,*"
+                              Margin="0,4,0,0">
+                            <TextBlock Text="脱敏度"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1"
+                                        Spacing="4"
+                                        Margin="8,0,0,0">
+                                <Slider Minimum="1"
+                                        Maximum="100"
+                                        Value="{Binding 配置.脱敏度}"
+                                        TickFrequency="5"
+                                        IsSnapToTickEnabled="True"
+                                        AutomationProperties.Name="脱敏度"
+                                        ToolTip.Tip="用于平滑累计偏差，数值越大越平滑"
+                                        Height="20" />
+                                <TextBlock Text="{Binding 配置.脱敏度}"
+                                           Classes="辅助文本" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- 随机偏差范围 -->
+                        <Grid ColumnDefinitions="Auto,*"
+                              Margin="0,4,0,0">
+                            <TextBlock Text="随机偏差范围"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1"
+                                        Spacing="4"
+                                        Margin="8,0,0,0">
+                                <Slider Minimum="1"
+                                        Maximum="5"
+                                        Value="{Binding 配置.随机偏差范围}"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        AutomationProperties.Name="随机偏差范围"
+                                        ToolTip.Tip="模拟人手微小抖动，单位为像素偏差"
+                                        Height="20" />
+                                <TextBlock Text="{Binding 配置.随机偏差范围}"
+                                           Classes="辅助文本" />
+                            </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+            <!-- 下半部分：运行日志（核心反馈信息），放在第二行，上面用 Margin 做间距 -->
+            <Border Grid.Row="1"
+                    Classes="卡片"
+                    Margin="0,12,0,0">
+                <Grid RowDefinitions="Auto,*">
+
+                    <TextBlock Text="运行日志"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#111827" />
+                    <ListBox Grid.Row="1"
+                             Margin="0,8,0,0"
+                             ItemsSource="{Binding 日志条目}"
+                             AutomationProperties.Name="运行日志列表">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding .}"
+                                           FontSize="12"
+                                           TextWrapping="Wrap" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+</Window>
